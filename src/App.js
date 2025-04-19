@@ -5,6 +5,7 @@ import Register from "./pages/Register";
 import AddProduct from "./pages/AddProduct";
 import Cart from "./pages/Cart"; // ✅ Import Cart page
 import ContactUs from "./pages/Contact"; // ✅ Import Cart page
+import Wishlist from "./pages/wishlist";
 
 import './App.css';
 
@@ -30,6 +31,7 @@ function App() {
           <Route path="/add-product" element={<AdminRoute><AddProduct /></AdminRoute>} />
           <Route path="/cart" element={<PrivateRoute><Cart /></PrivateRoute>} /> {/* ✅ Add this */}
           <Route path="/contactUs" element={<ContactUs />} />
+          <Route path="/favorites" element={<Wishlist />} />
 
         </Routes>
       </BrowserRouter>
