@@ -32,17 +32,26 @@ const Cart = () => {
       const cartKey = `cart_${token}`
       const stored = JSON.parse(localStorage.getItem(cartKey)) || []
 
+      // Group items by product ID and add quantity
       const groupedCart = stored.reduce((acc, item) => {
+        // Create a unique key for each product
         const productKey = item._id || item.name
+
         if (!acc[productKey]) {
+          // If this product isn't in our accumulator yet, add it with quantity 1
           acc[productKey] = { ...item, quantity: 1 }
         } else {
+          // If it is, just increment the quantity
           acc[productKey].quantity += 1
         }
         return acc
       }, {})
 
-      setCart(Object.values(groupedCart))
+      // Convert back to array
+      const cartWithQuantities = Object.values(groupedCart)
+
+      console.log("Cart items loaded with quantities:", cartWithQuantities)
+      setCart(cartWithQuantities)
     } else {
       setCart([])
     }
@@ -50,40 +59,45 @@ const Cart = () => {
 
   const validateForm = () => {
     const errors = {}
-    if (!customerName.trim()) errors.name = "Name is required"
+    if (!customerName.trim()) {
+      errors.name = "Name is required"
+    }
     if (!customerPhone.trim()) {
       errors.phone = "Phone number is required"
     } else if (!/^\d{10}$/.test(customerPhone.replace(/\D/g, ""))) {
       errors.phone = "Please enter a valid 10-digit phone number"
     }
-    if (!customerAddress.trim()) errors.address = "Address is required"
+    if (!customerAddress.trim()) {
+      errors.address = "Address is required"
+    }
     setFormErrors(errors)
     return Object.keys(errors).length === 0
   }
 
-  const formatMessage = (newline = "%0A") => {
-    const msg = cart.map((p) => `- ${p.name} x${p.quantity} (Rs. ${p.price * p.quantity})`).join(newline)
-    const total = calculateTotal()
-    const customerInfo = `${newline}${newline}[Customer Details]${newline}Name: ${customerName}${newline}Phone: ${customerPhone}${newline}Address: ${customerAddress}`
-    return `Order:${newline}${msg}${newline}${newline}Total: Rs.${total}${customerInfo}`
-  }
-
   const sendToWhatsApp = () => {
-    if (!validateForm()) return
-    const fullMessage = formatMessage("%0A")
-    window.open(`https://wa.me/9779841241832?text=${fullMessage}`, "_blank")
-  }
+    if (!validateForm()) {
+      return
+    }
 
-  const sendToViber = () => {
-    if (!validateForm()) return
-    const viberMessage = encodeURIComponent(formatMessage("\n"))
-    window.open(`viber://forward?text=${viberMessage}`, "_blank")
+    // Format the product list with quantities
+    const msg = cart.map((p) => `- ${p.name} x${p.quantity} (Rs. ${p.price * p.quantity})`).join("%0A")
+    const total = calculateTotal()
+
+    // Format the customer details
+    const customerInfo = `%0A%0A[Customer Details]%0AName: ${customerName}%0APhone: ${customerPhone}%0AAddress: ${customerAddress}`
+
+    // Combine everything into the final message
+    const fullMessage = `Order:%0A${msg}%0A%0ATotal: Rs.${total}${customerInfo}`
+
+    // Open WhatsApp with the formatted message
+    window.open(`https://wa.me/9779841241832?text=${fullMessage}`, "_blank")
   }
 
   const clearCart = () => {
     const token = localStorage.getItem("token")
     if (token && token !== "undefined" && token !== "null") {
-      localStorage.removeItem(`cart_${token}`)
+      const cartKey = `cart_${token}`
+      localStorage.removeItem(cartKey)
       setCart([])
     }
   }
@@ -96,20 +110,24 @@ const Cart = () => {
       newCart.splice(index, 1)
       setCart(newCart)
 
+      // Update localStorage with the new cart
+      // We need to "flatten" the cart to maintain compatibility with the existing code
       const flattenedCart = newCart.flatMap((item) =>
         Array(item.quantity)
           .fill()
           .map(() => {
             const { quantity, ...itemWithoutQuantity } = item
             return itemWithoutQuantity
-          })
+          }),
       )
+
       localStorage.setItem(cartKey, JSON.stringify(flattenedCart))
     }
   }
 
   const updateQuantity = (index, newQuantity) => {
-    if (newQuantity < 1) return
+    if (newQuantity < 1) return // Don't allow quantities less than 1
+
     const token = localStorage.getItem("token")
     if (token && token !== "undefined" && token !== "null") {
       const cartKey = `cart_${token}`
@@ -117,21 +135,32 @@ const Cart = () => {
       newCart[index].quantity = newQuantity
       setCart(newCart)
 
+      // Update localStorage with the new cart
+      // We need to "flatten" the cart to maintain compatibility with the existing code
       const flattenedCart = newCart.flatMap((item) =>
         Array(item.quantity)
           .fill()
           .map(() => {
             const { quantity, ...itemWithoutQuantity } = item
             return itemWithoutQuantity
-          })
+          }),
       )
+
       localStorage.setItem(cartKey, JSON.stringify(flattenedCart))
     }
   }
 
-  const calculateItemTotal = (item) => (item.price * item.quantity).toFixed(2)
-  const calculateTotal = () => cart.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0).toFixed(2)
-  const getTotalItems = () => cart.reduce((sum, item) => sum + item.quantity, 0)
+  const calculateItemTotal = (item) => {
+    return (item.price * item.quantity).toFixed(2)
+  }
+
+  const calculateTotal = () => {
+    return cart.reduce((sum, item) => sum + Number(item.price) * item.quantity, 0).toFixed(2)
+  }
+
+  const getTotalItems = () => {
+    return cart.reduce((sum, item) => sum + item.quantity, 0)
+  }
 
   return (
     <div className="cart-page">
@@ -141,9 +170,12 @@ const Cart = () => {
             <ShoppingCart className="cart-header-icon" />
             Your Shopping Cart
           </h2>
-          <p>{getTotalItems()} {getTotalItems() === 1 ? "item" : "items"} in your cart</p>
+          <p>
+            {getTotalItems()} {getTotalItems() === 1 ? "item" : "items"} in your cart
+          </p>
           <button className="back-to-home-btn" onClick={() => navigate("/")}>
-            <Home size={16} /> Back to Home
+            <Home size={16} />
+            Back to Home
           </button>
         </div>
 
@@ -168,7 +200,9 @@ const Cart = () => {
                     <img
                       src={
                         item.image ||
-                        "https://images.unsplash.com/photo-1584473457406-6240486418e9?q=80&w=1974&auto=format&fit=crop"
+                        "https://images.unsplash.com/photo-1584473457406-6240486418e9?q=80&w=1974&auto=format&fit=crop" ||
+                        "/placeholder.svg" ||
+                        "/placeholder.svg"
                       }
                       alt={item.name}
                       onError={(e) => {
@@ -182,7 +216,11 @@ const Cart = () => {
                     <h3>{item.name}</h3>
                     <p className="item-description">{item.description || "Fresh product from JG Enterprise"}</p>
                     <div className="item-quantity-control">
-                      <button className="quantity-btn" onClick={() => updateQuantity(index, item.quantity - 1)} disabled={item.quantity <= 1}>
+                      <button
+                        className="quantity-btn"
+                        onClick={() => updateQuantity(index, item.quantity - 1)}
+                        disabled={item.quantity <= 1}
+                      >
                         <Minus size={14} />
                       </button>
                       <span className="quantity-display">{item.quantity}</span>
@@ -211,7 +249,10 @@ const Cart = () => {
               </div>
 
               <div className="summary-row">
-                <span className="shipping-label"><Truck size={16} className="summary-icon" /> Shipping</span>
+                <span className="shipping-label">
+                  <Truck size={16} className="summary-icon" />
+                  Shipping
+                </span>
                 <span className="free-shipping">Free</span>
               </div>
 
@@ -224,6 +265,7 @@ const Cart = () => {
 
               <div className="customer-details">
                 <h4>Customer Information</h4>
+
                 <div className="form-group">
                   <label htmlFor="customerName">Your Name</label>
                   <input
@@ -234,7 +276,12 @@ const Cart = () => {
                     placeholder="Enter your full name"
                     className={formErrors.name ? "error" : ""}
                   />
-                  {formErrors.name && <span className="error-message"><AlertCircle size={14} className="error-icon" />{formErrors.name}</span>}
+                  {formErrors.name && (
+                    <span className="error-message">
+                      <AlertCircle size={14} className="error-icon" />
+                      {formErrors.name}
+                    </span>
+                  )}
                 </div>
 
                 <div className="form-group">
@@ -250,7 +297,12 @@ const Cart = () => {
                       className={formErrors.phone ? "error" : ""}
                     />
                   </div>
-                  {formErrors.phone && <span className="error-message"><AlertCircle size={14} className="error-icon" />{formErrors.phone}</span>}
+                  {formErrors.phone && (
+                    <span className="error-message">
+                      <AlertCircle size={14} className="error-icon" />
+                      {formErrors.phone}
+                    </span>
+                  )}
                 </div>
 
                 <div className="form-group">
@@ -263,24 +315,28 @@ const Cart = () => {
                     rows="3"
                     className={formErrors.address ? "error" : ""}
                   ></textarea>
-                  {formErrors.address && <span className="error-message"><AlertCircle size={14} className="error-icon" />{formErrors.address}</span>}
+                  {formErrors.address && (
+                    <span className="error-message">
+                      <AlertCircle size={14} className="error-icon" />
+                      {formErrors.address}
+                    </span>
+                  )}
                 </div>
               </div>
 
               <button className="checkout-btn" onClick={sendToWhatsApp}>
-                <Send size={18} /> Checkout via WhatsApp
-              </button>
-
-              <button className="checkout-btn" onClick={sendToViber}>
-                <Send size={18} /> Checkout via Viber
+                <Send size={18} />
+                Checkout via WhatsApp
               </button>
 
               <button className="clear-cart-btn" onClick={clearCart}>
-                <Trash2 size={16} /> Clear Cart
+                <Trash2 size={16} />
+                Clear Cart
               </button>
 
               <button className="continue-shopping-link" onClick={() => navigate("/")}>
-                <ArrowLeft size={16} /> Continue Shopping
+                <ArrowLeft size={16} />
+                Continue Shopping
               </button>
             </div>
           </div>
