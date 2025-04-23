@@ -18,7 +18,7 @@ function ContactUs() {
   }, [])
 
   const handleWhatsAppRedirect = () => {
-    window.open("https://wa.me/9779841214032", "_blank")
+    window.open("https://wa.me/9779841241832", "_blank")
   }
 
   const toggleMobileMenu = () => {
