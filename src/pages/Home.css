@@ -749,7 +749,7 @@ img {
 .product-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: 20px;
   padding: 10px;
 }
@@ -766,7 +766,7 @@ img {
   flex-direction: column;
   height: auto; /* Changed from 100% to auto */
   max-height: 290px; /* Added max-height constraint */
-  width: 100%;
+  width: 150%;
   position: relative;
 }
 
@@ -1151,7 +1151,7 @@ img {
   }
 
   .product-grid {
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
     gap: 14px;
   }
 
@@ -1175,7 +1175,6 @@ img {
 
   .product-grid {
     grid-template-columns: repeat(3, 1fr);
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
     gap: 10px;
   }
 
@@ -1319,5 +1318,486 @@ img {
   padding-top: 20px;
   border-top: 1px solid var(--primary-bg-light);
   font-size: 14px;
+  color: var(--primary-color);
+}
+/* Enhanced Responsive Styles */
+@media (max-width: 1200px) {
+  .container {
+    padding: 0 16px;
+  }
+
+  .hero-content {
+    gap: 20px;
+  }
+
+  .hero-text h1 {
+    font-size: 32px;
+  }
+}
+
+@media (max-width: 992px) {
+  .desktop-nav {
+    display: none;
+  }
+
+  .mobile-menu-toggle {
+    display: none; /* Hidden by default on desktop */
+    background: none;
+    border: none;
+    color: #333; /* Explicit color */
+    cursor: pointer;
+    padding: 8px;
+    z-index: 1000;
+    position: relative;
+    margin-left: 10px;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Only show the mobile menu toggle on smaller screens */
+  @media (max-width: 992px) {
+    .mobile-menu-toggle {
+      display: flex !important; /* Force display on mobile */
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+
+  .hero-content {
+    flex-direction: column;
+  }
+
+  .hero-text h1 {
+    font-size: 28px;
+  }
+
+  .hero-text p {
+    font-size: 16px;
+  }
+
+  .footer-columns {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  }
+
+  .auth-nav-buttons {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .top-bar {
+    display: none;
+  }
+
+  .navbar-container {
+    height: 60px;
+    padding: 0 16px;
+  }
+
+  .logo span {
+    font-size: 20px;
+  }
+
+  .mobile-menu {
+    top: 60px;
+  }
+
+  .hero {
+    padding: 40px 16px;
+  }
+
+  .hero-text h1 {
+    font-size: 24px;
+  }
+
+  .products-container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    display: none;
+    margin-bottom: 20px;
+  }
+
+  .sidebar.active {
+    display: block;
+  }
+
+  .mobile-filter-toggle {
+    display: flex;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+  }
+
+  .section-header h2 {
+    font-size: 24px;
+  }
+
+  .section-header p {
+    font-size: 14px;
+  }
+
+  .filter-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-text h1 {
+    font-size: 22px;
+  }
+
+  .hero-text p {
+    font-size: 14px;
+  }
+
+  .shop-now-btn {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .product-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  .product-image {
+    height: 120px;
+  }
+
+  .product-details {
+    padding: 8px;
+  }
+
+  .product-name {
+    font-size: 12px;
+    -webkit-line-clamp: 2;
+    max-height: 36px;
+  }
+
+  .product-category {
+    font-size: 10px;
+  }
+
+  .product-price .current-price {
+    font-size: 14px;
+  }
+
+  .old-price {
+    font-size: 10px;
+  }
+
+  .add-to-cart-btn {
+    padding: 4px 8px;
+    font-size: 10px;
+  }
+
+  .wishlist-btn-small {
+    width: 24px;
+    height: 24px;
+  }
+
+  .wishlist-btn-small svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .footer-columns {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+
+  .footer {
+    padding: 40px 0 20px;
+  }
+
+  .footer-column h3 {
+    font-size: 16px;
+  }
+
+  .footer-column h4 {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 375px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-image {
+    height: 160px;
+  }
+
+  .product-name {
+    font-size: 11px;
+  }
+
+  .product-buttons {
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .add-to-cart-btn {
+    width: 100%;
+  }
+
+  .header-action-btn {
+    width: 32px;
+    height: 32px;
+  }
+}
+
+/* Filter section improvements */
+.filter-section {
+  transition: all 0.3s ease;
+}
+
+.filter-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.reset-filter-btn {
+  background-color: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+}
+
+.reset-filter-btn:hover {
+  background-color: var(--primary-bg);
+}
+
+/* Wishlist button positioning */
+.wishlist-btn-main {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-color);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 5;
+  transition: all 0.2s ease;
+}
+
+.wishlist-btn-main:hover,
+.wishlist-btn-main.active {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+/* Improve loading state */
+.loading-container {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  gap: 16px;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid var(--primary-bg-light);
+  border-top: 3px solid var(--primary-color);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Update the mobile menu styles to ensure it's visible and properly positioned */
+.mobile-menu {
+  display: block; /* Changed from 'none' to always be in the DOM */
+  position: fixed;
+  top: 60px;
+  left: 0;
+  right: 0;
+  background-color: white; /* Explicit color instead of var */
+  padding: 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); /* Explicit shadow */
+  z-index: 999;
+  transform: translateY(-100%); /* Start above the viewport */
+  opacity: 0;
+  transition: transform 0.3s ease, opacity 0.3s ease; /* Explicit transition */
+  visibility: hidden;
+  height: auto;
+  overflow-y: auto;
+  max-height: calc(100vh - 60px);
+}
+
+.mobile-menu.active {
+  transform: translateY(0); /* Move into view */
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* Ensure the mobile menu toggle is properly styled and clickable */
+.mobile-menu-toggle {
+  display: none; /* Hidden by default on desktop */
+  background: none;
+  border: none;
+  color: #333; /* Explicit color */
+  cursor: pointer;
+  padding: 8px;
+  z-index: 1000;
+  position: relative;
+  margin-left: 10px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Only show the mobile menu toggle on smaller screens */
+@media (max-width: 992px) {
+  .mobile-menu-toggle {
+    display: flex !important; /* Force display on mobile */
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+  }
+}
+
+/* Fix for mobile menu links */
+.mobile-nav-links {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+.mobile-nav-link {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 12px 0;
+  font-size: 16px;
+  font-weight: 500;
+  color: #333; /* Explicit color */
+  border-bottom: 1px solid #eee; /* Explicit color */
+}
+
+.mobile-auth {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.auth-buttons {
+  display: flex;
+  gap: 10px;
+  flex-direction: column;
+  width: 100%;
+}
+
+.btn {
+  padding: 10px 16px;
+  border-radius: 4px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.login-btn {
+  background-color: #1cb82c; /* Explicit color */
+  color: white;
+  border: none;
+}
+
+.register-btn {
+  background-color: transparent;
+  border: 1px solid #4af7a6; /* Explicit color */
+  color: #1cb82c; /* Explicit color */
+}
+
+/* Login prompt styles */
+.login-prompt {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: white;
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 2000;
+  text-align: center;
+  width: 90%;
+  max-width: 300px;
+}
+
+.login-prompt p {
+  margin-bottom: 12px;
+  font-weight: 500;
+  color: var(--primary-dark);
+}
+
+.login-prompt-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.login-prompt-btn {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.register-prompt-btn {
+  background-color: transparent;
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.mobile-nav-link:active,
+.mobile-nav-link:focus {
   color: var(--primary-color);
 }
