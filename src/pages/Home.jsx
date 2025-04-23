@@ -66,7 +66,7 @@ const Home = () => {
   useEffect(() => {
     setLoading(true)
     axios
-      .get("http://localhost:5000/api/products")
+      .get("https://dineshlaalshop.onrender.com/api/products")
       .then((res) => {
         const productsData = res.data
         setProducts(productsData)
@@ -152,7 +152,7 @@ const Home = () => {
     const productToAdd = {
       ...product,
       image: product.image?.startsWith("/uploads")
-        ? `http://localhost:5000${product.image}`
+        ? `https://dineshlaalshop.onrender.com${product.image}`
         : product.image ||
           "https://images.unsplash.com/photo-1584473457406-6240486418e9?q=80&w=1974&auto=format&fit=crop",
     }
