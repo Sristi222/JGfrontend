@@ -538,12 +538,12 @@ const Home = () => {
               Home
             </a>
             <a
-              href="/contact"
+              href="/contactUs"
               className="mobile-nav-link"
               onClick={(e) => {
                 e.preventDefault()
                 setMobileMenuOpen(false)
-                navigate("/contact")
+                navigate("/contactUs")
               }}
             >
               Contact
