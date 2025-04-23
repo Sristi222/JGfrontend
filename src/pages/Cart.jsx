@@ -71,7 +71,7 @@ const Cart = () => {
   const sendToWhatsApp = () => {
     if (!validateForm()) return
     const fullMessage = formatMessage("%0A")
-    window.open(`https://wa.me/9779813244622?text=${fullMessage}`, "_blank")
+    window.open(`https://wa.me/9779841241832?text=${fullMessage}`, "_blank")
   }
 
   const sendToViber = () => {
