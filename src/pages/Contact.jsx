@@ -34,7 +34,7 @@ function ContactUs() {
       <header className="navbar">
         <div className="navbar-container">
           <a href="/" className="logo">
-            🛍️ JG Enterprise
+            🛍️ Dinesh Laal's Shop
           </a>
 
           <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
@@ -44,9 +44,6 @@ function ContactUs() {
           <nav className={`nav-links ${mobileMenuOpen ? "active" : ""}`}>
             <a href="/" className="nav-link">
               Home
-            </a>
-            <a href="/about" className="nav-link">
-              About
             </a>
             <a href="/ContactUs" className="nav-link active">
               Contact
@@ -94,26 +91,25 @@ function ContactUs() {
                 <div className="info-item">
                   <Phone size={20} />
                   <div>
-                    <p>+977 9841214032</p>
-                    <p>+977 9808741780</p>
+                    <p>+977 9841241832</p>
                   </div>
                 </div>
                 <div className="info-item">
                   <Mail size={20} />
-                  <a href="mailto:stha.heem555@gmail.com" className="email-link">
-                    stha.heem555@gmail.com
+                  <a href="mailto:dineshlaal@gmail.com" className="email-link">
+                    dineshlaalshrestha@gmail.com
                   </a>
                 </div>
                 <div className="info-item">
                   <MapPin size={20} />
-                  <p>Swoyambhu, Karkhana Chowk</p>
+                  <p>Bhedasingh, Kathmandu</p>
                 </div>
               </div>
               <div className="info-group">
                 <h3 className="info-title">Business Hours</h3>
                 <div className="info-item">
                   <Clock size={20} />
-                  <p>Sunday - Friday: 9: 00 AM - 7:00 PM</p>
+                  <p>Saturday - Friday: 9: 00 AM - 7:00 PM</p>
                 </div>
               </div>
               <button onClick={handleWhatsAppRedirect} className="whatsapp-btn">
@@ -142,8 +138,8 @@ function ContactUs() {
         <div className="footer-container">
           <div className="footer-columns">
             <div className="footer-column">
-              <h3>JG Enterprise</h3>
-              <p>Your one-stop destination for trendy fashion and accessories.</p>
+              <h3>Dinesh Laal's Shop</h3>
+              <p>Your one-stop destination for premium essentials.</p>
             </div>
 
             <div className="footer-column">
@@ -193,7 +189,7 @@ function ContactUs() {
           </div>
 
           <div className="footer-bottom">
-            <p>© {new Date().getFullYear()} JG Enterprise. All rights reserved.</p>
+            <p>© {new Date().getFullYear()} Dinesh Laal's Shop. All rights reserved.</p>
           </div>
         </div>
       </footer>

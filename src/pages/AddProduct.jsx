@@ -1,4 +1,3 @@
-// AddProduct.jsx
 "use client";
 
 import { useState, useEffect } from "react";
@@ -10,10 +9,12 @@ const AddProduct = () => {
   const [name, setName] = useState("");
   const [desc, setDesc] = useState("");
   const [price, setPrice] = useState("");
+  const [category, setCategory] = useState("");
   const [imageFile, setImageFile] = useState(null);
   const [preview, setPreview] = useState("");
   const [products, setProducts] = useState([]);
   const [showForm, setShowForm] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const navigate = useNavigate();
 
   const fetchProducts = async () => {
@@ -31,9 +32,35 @@ const AddProduct = () => {
     setPreview(URL.createObjectURL(file));
   };
 
+  const handleEdit = (product) => {
+    setEditingId(product._id);
+    setName(product.name);
+    setDesc(product.description);
+    setPrice(product.price);
+    setCategory(product.category);
+    setPreview(
+      product.image?.startsWith("/uploads")
+        ? `http://localhost:5000${product.image}`
+        : product.image
+    );
+    setImageFile(null);
+    setShowForm(true);
+  };
+
+  const resetForm = () => {
+    setName("");
+    setDesc("");
+    setPrice("");
+    setCategory("");
+    setImageFile(null);
+    setPreview("");
+    setEditingId(null);
+    setShowForm(false);
+  };
+
   const handleSubmit = async () => {
-    if (!name || !desc || !price || !imageFile) {
-      alert("Please fill all fields including image.");
+    if (!name || !desc || !price || (!imageFile && !editingId) || !category) {
+      alert("Please fill all fields including category and image.");
       return;
     }
 
@@ -41,24 +68,26 @@ const AddProduct = () => {
     formData.append("name", name);
     formData.append("description", desc);
     formData.append("price", price);
-    formData.append("image", imageFile);
+    formData.append("category", category);
+    if (imageFile) formData.append("image", imageFile);
 
     try {
-      await axios.post("http://localhost:5000/api/products", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      alert("Product added successfully!");
+      if (editingId) {
+        await axios.put(`http://localhost:5000/api/products/${editingId}`, formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        alert("Product updated successfully!");
+      } else {
+        await axios.post("http://localhost:5000/api/products", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+        alert("Product added successfully!");
+      }
+
       fetchProducts();
-      setName("");
-      setDesc("");
-      setPrice("");
-      setImageFile(null);
-      setPreview("");
-      setShowForm(false);
+      resetForm();
     } catch (err) {
-      alert("Failed to add product");
+      alert("Failed to save product");
       console.error(err);
     }
   };
@@ -69,20 +98,30 @@ const AddProduct = () => {
     fetchProducts();
   };
 
+  const handleSignOut = () => {
+    localStorage.clear();
+    navigate("/");
+  };
+
   return (
     <div className="add-product-container">
-      <div className="d-flex justify-content-between align-items-center">
+      <div className="d-flex justify-content-between align-items-center mb-3">
         <h2>Manage Products</h2>
-        <button className="btn btn-success" onClick={() => setShowForm(!showForm)}>
-          {showForm ? "Hide Form" : "➕ Add New Product"}
-        </button>
+        <div>
+          <button className="btn btn-outline-danger me-2" onClick={handleSignOut}>
+            🔒 Sign Out
+          </button>
+          <button className="btn btn-success" onClick={() => setShowForm(!showForm)}>
+            {showForm ? "Hide Form" : "➕ Add New Product"}
+          </button>
+        </div>
       </div>
 
       {showForm && (
         <div className="add-product-card mt-3">
           <div className="add-product-header">
-            <h3>Add New Product</h3>
-            <p>Enter the details of your new product below</p>
+            <h3>{editingId ? "Edit Product" : "Add New Product"}</h3>
+            <p>{editingId ? "Update the product details below" : "Enter the details of your new product below"}</p>
           </div>
 
           <div className="add-product-form">
@@ -125,6 +164,23 @@ const AddProduct = () => {
             </div>
 
             <div className="form-group">
+              <label htmlFor="category">Category</label>
+              <select
+                id="category"
+                className="form-control"
+                value={category}
+                onChange={(e) => setCategory(e.target.value)}
+              >
+                <option value="">-- Select Category --</option>
+                <option value="Grains">Grains</option>
+                <option value="Rice">Rice</option>
+                <option value="Oil">Oil</option>
+                <option value="Taichin">Taichin Chamal</option>
+                <option value="Chuira">Chuira</option>
+              </select>
+            </div>
+
+            <div className="form-group">
               <label htmlFor="image">Upload Image</label>
               <input
                 type="file"
@@ -137,8 +193,10 @@ const AddProduct = () => {
             </div>
 
             <div className="form-actions">
-              <button className="btn-cancel" onClick={() => setShowForm(false)}>Cancel</button>
-              <button className="btn-submit" onClick={handleSubmit}>Add Product</button>
+              <button className="btn-cancel" onClick={resetForm}>Cancel</button>
+              <button className="btn-submit" onClick={handleSubmit}>
+                {editingId ? "Update Product" : "Add Product"}
+              </button>
             </div>
           </div>
         </div>
@@ -153,6 +211,7 @@ const AddProduct = () => {
                 <th>#</th>
                 <th>Name</th>
                 <th>Price</th>
+                <th>Category</th>
                 <th>Image</th>
                 <th>Actions</th>
               </tr>
@@ -163,14 +222,18 @@ const AddProduct = () => {
                   <td>{i + 1}</td>
                   <td>{p.name}</td>
                   <td>Rs. {p.price}</td>
+                  <td>{p.category}</td>
                   <td>
                     <img
-                      src={p.image?.startsWith("/uploads") ? `http://localhost:5000${p.image}` : p.image}
+                      src={p.image?.startsWith("/uploads")
+                        ? `http://localhost:5000${p.image}`
+                        : p.image}
                       className="product-thumb"
                       alt=""
                     />
                   </td>
                   <td>
+                    <button className="btn btn-primary btn-sm me-2" onClick={() => handleEdit(p)}>✏️ Edit</button>
                     <button className="btn btn-danger btn-sm" onClick={() => deleteProduct(p._id)}>🗑 Delete</button>
                   </td>
                 </tr>

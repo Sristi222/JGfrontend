@@ -24,6 +24,7 @@ import {
   UserPlus,
 } from "lucide-react"
 import "./Home.css"
+import "./Contact"
 
 const isLoggedIn = () => {
   const token = localStorage.getItem("token")
@@ -57,13 +58,37 @@ const Home = () => {
   const [wishlist, setWishlist] = useState([])
   const navigate = useNavigate()
   const [productDataSample, setProductDataSample] = useState(null) // Initialize state for product data sample
+  const [selectedCategories, setSelectedCategories] = useState([])
+  const [filteredProducts, setFilteredProducts] = useState([])
+  const [maxPrice, setMaxPrice] = useState(1000)
+  const [availableCategories, setAvailableCategories] = useState([])
 
   useEffect(() => {
     setLoading(true)
     axios
       .get("http://localhost:5000/api/products")
       .then((res) => {
-        setProducts(res.data)
+        const productsData = res.data
+        setProducts(productsData)
+        setFilteredProducts(productsData)
+
+        // Find the highest price for the range slider
+        const highestPrice = Math.max(...productsData.map((product) => Number(product.price || 0)))
+        setMaxPrice(highestPrice > 0 ? Math.ceil(highestPrice) : 1000)
+        setPriceRange(highestPrice > 0 ? Math.ceil(highestPrice) : 500)
+
+        // Extract unique categories from products
+        const categories = new Set()
+        productsData.forEach((product) => {
+          if (product.category) {
+            categories.add(product.category)
+          } else {
+            categories.add("Grocery") // Add default category
+          }
+        })
+        setAvailableCategories(Array.from(categories))
+        console.log("Available categories:", Array.from(categories))
+
         setLoading(false)
       })
       .catch((err) => {
@@ -195,6 +220,57 @@ const Home = () => {
   const toggleUserMenu = () => setUserMenuOpen(!userMenuOpen)
   const handlePriceChange = (e) => setPriceRange(e.target.value)
 
+  const handleCategoryChange = (category) => {
+    setSelectedCategories((prev) => {
+      if (prev.includes(category)) {
+        return prev.filter((cat) => cat !== category)
+      } else {
+        return [...prev, category]
+      }
+    })
+  }
+
+  const applyFilters = () => {
+    console.log("Applying filters...")
+    console.log("Original products count:", products.length)
+    console.log("Selected categories:", selectedCategories)
+    console.log("Price range:", priceRange)
+
+    let filtered = [...products]
+
+    // Filter by selected categories (case-insensitive)
+    if (selectedCategories.length > 0) {
+      console.log("Filtering by categories...")
+      filtered = filtered.filter((product) => {
+        const productCategory = product.category || "Grocery"
+        const isIncluded = selectedCategories.some((cat) => cat.toLowerCase() === productCategory.toLowerCase())
+        console.log(`Product ${product.name}, category: ${productCategory}, included: ${isIncluded}`)
+        return isIncluded
+      })
+    }
+
+    // Filter by price range
+    console.log("Filtering by price...")
+    filtered = filtered.filter((product) => {
+      const price = Number(product.price || 0)
+      const isIncluded = price <= Number(priceRange)
+      console.log(`Product ${product.name}, price: ${price}, max: ${priceRange}, included: ${isIncluded}`)
+      return isIncluded
+    })
+
+    console.log("Filtered products result count:", filtered.length)
+    setFilteredProducts(filtered)
+    // Close mobile filter on apply
+    setMobileFilterOpen(false)
+  }
+
+  const resetFilters = () => {
+    console.log("Resetting filters")
+    setSelectedCategories([])
+    setPriceRange(maxPrice)
+    setFilteredProducts(products)
+  }
+
   return (
     <div className="app-container">
       {/* Top Bar */}
@@ -203,7 +279,7 @@ const Home = () => {
           <div className="top-bar-contact">
             <div className="top-bar-item">
               <Phone size={14} />
-              <span>+1 (555) 123-4567</span>
+              <span>+977 9841241832</span>
             </div>
             <div className="top-bar-item">
               <Mail size={14} />
@@ -212,12 +288,8 @@ const Home = () => {
           </div>
           <div className="top-bar-info">
             <div className="top-bar-item">
-              <MapPin size={14} />
-              <span>Store Locator</span>
-            </div>
-            <div className="top-bar-item">
               <Truck size={14} />
-              <span>Free delivery on orders over ₹500</span>
+              <span>Delivery service available</span>
             </div>
           </div>
         </div>
@@ -227,7 +299,7 @@ const Home = () => {
       <header className="navbar">
         <div className="navbar-container">
           <a href="/" className="logo">
-            <span>JG Enterprise</span>
+            <span>🛍️ Dinesh Laal's Shop</span>
           </a>
 
           <div className="desktop-nav">
@@ -235,10 +307,7 @@ const Home = () => {
               <a href="/" className="nav-link">
                 Home
               </a>
-              <a href="/about" className="nav-link">
-                About
-              </a>
-              <a href="/contact" className="nav-link">
+              <a href="/contactUs" className="nav-link">
                 Contact
               </a>
             </nav>
@@ -354,25 +423,24 @@ const Home = () => {
         <div className="hero-content">
           <div className="hero-text">
             <span className="offer-badge">Special Offer</span>
-            <h1>Fresh Groceries Delivered To Your Door</h1>
+            <h1>Shop preminum quality essentials</h1>
             <p>
-              Discover our wide selection of fresh produce, pantry staples, and household essentials from your local
-              kirana store.
+            Explore our handpicked collection of everyday essentials — from chiura, daal, and cooking oils to premium flours, pulses, and more. Shop local, eat better.
             </p>
-            <a href="/shop" className="btn shop-now-btn">
-              Shop Now
-            </a>
+            <a href="#featured-products" className="btn shop-now-btn">
+  Shop Now
+</a>
           </div>
           <div className="hero-image">
             <img
-              src="https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1974&auto=format&fit=crop"
+              src="https://s.yimg.com/ny/api/res/1.2/UkNv97.Zymn6YPWv8c_ywg--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyMDA7aD04MDA-/https://s.yimg.com/os/creatr-uploaded-images/2025-02/40106400-f3de-11ef-ae42-a01caf20d14d"
               alt="Fresh groceries"
             />
           </div>
         </div>
       </section>
 
-      {/* Featured Categories */}
+      {/* Featured Categories 
       <section className="featured-categories">
         <div className="container">
           <div className="section-header">
@@ -383,36 +451,36 @@ const Home = () => {
             <a href="/category/fruits-vegetables" className="category-card">
               <div className="category-image">
                 <img
-                  src="https://images.unsplash.com/photo-1610348725531-843dff563e2c?q=80&w=1970&auto=format&fit=crop"
-                  alt="Fruits & Vegetables"
+                  src="https://plus.unsplash.com/premium_photo-1722945635992-8eda6a907978?q=80&w=1960&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                  alt="Grains and Pulses"
                 />
               </div>
-              <h3>Fruits & Vegetables</h3>
+              <h3>Grains & Pulses</h3>
             </a>
             <a href="/category/dairy-eggs" className="category-card">
               <div className="category-image">
                 <img
-                  src="https://images.unsplash.com/photo-1628088062854-d1870b4553da?q=80&w=1974&auto=format&fit=crop"
-                  alt="Dairy & Eggs"
+                  src="https://punjabigroceries.com/cdn/shop/collections/Oil-Ghee-Combo1.jpg?v=1534474410"
+                  alt="Oils & Ghee"
                 />
               </div>
-              <h3>Dairy & Eggs</h3>
+              <h3>Oil & Ghee</h3>
             </a>
             <a href="/category/pantry" className="category-card">
               <div className="category-image">
                 <img
                   src="https://images.unsplash.com/photo-1584473457406-6240486418e9?q=80&w=1974&auto=format&fit=crop"
-                  alt="Pantry Staples"
+                  alt="All-Purpose Flour"
                 />
               </div>
-              <h3>Pantry Staples</h3>
+              <h3>All-Purpose Flour</h3>
             </a>
           </div>
         </div>
-      </section>
+      </section>*/}
 
       {/* Main Content - Products */}
-      <main className="main-content">
+      <main className="main-content" id="featured-products">
         <div className="container">
           <div className="section-header">
             <h2>Featured Products</h2>
@@ -433,57 +501,33 @@ const Home = () => {
                 <div className="filter-group">
                   <h4>Categories</h4>
                   <div className="checkbox-group">
+                    {/* Default Grocery category */}
                     <label className="checkbox-label">
-                      <input type="checkbox" className="checkbox-input" />
+                      <input
+                        type="checkbox"
+                        className="checkbox-input"
+                        checked={selectedCategories.includes("Grocery")}
+                        onChange={() => handleCategoryChange("Grocery")}
+                      />
                       <span className="checkbox-custom"></span>
-                      <span>Fruits & Vegetables</span>
+                      <span>Grains</span>
                     </label>
-                    <label className="checkbox-label">
-                      <input type="checkbox" className="checkbox-input" />
-                      <span className="checkbox-custom"></span>
-                      <span>Dairy & Eggs</span>
-                    </label>
-                    <label className="checkbox-label">
-                      <input type="checkbox" className="checkbox-input" />
-                      <span className="checkbox-custom"></span>
-                      <span>Meat & Seafood</span>
-                    </label>
-                    <label className="checkbox-label">
-                      <input type="checkbox" className="checkbox-input" />
-                      <span className="checkbox-custom"></span>
-                      <span>Bakery</span>
-                    </label>
-                    <label className="checkbox-label">
-                      <input type="checkbox" className="checkbox-input" />
-                      <span className="checkbox-custom"></span>
-                      <span>Pantry & Staples</span>
-                    </label>
-                  </div>
-                </div>
 
-                <div className="filter-group">
-                  <h4>Dietary Preferences</h4>
-                  <div className="checkbox-group">
-                    <label className="checkbox-label">
-                      <input type="checkbox" className="checkbox-input" />
-                      <span className="checkbox-custom"></span>
-                      <span>Organic</span>
-                    </label>
-                    <label className="checkbox-label">
-                      <input type="checkbox" className="checkbox-input" />
-                      <span className="checkbox-custom"></span>
-                      <span>Vegetarian</span>
-                    </label>
-                    <label className="checkbox-label">
-                      <input type="checkbox" className="checkbox-input" />
-                      <span className="checkbox-custom"></span>
-                      <span>Vegan</span>
-                    </label>
-                    <label className="checkbox-label">
-                      <input type="checkbox" className="checkbox-input" />
-                      <span className="checkbox-custom"></span>
-                      <span>Gluten-Free</span>
-                    </label>
+                    {/* Dynamic categories from products */}
+                    {availableCategories
+                      .filter((cat) => cat !== "Grocery") // Skip Grocery as it's already added above
+                      .map((category) => (
+                        <label className="checkbox-label" key={category}>
+                          <input
+                            type="checkbox"
+                            className="checkbox-input"
+                            checked={selectedCategories.includes(category)}
+                            onChange={() => handleCategoryChange(category)}
+                          />
+                          <span className="checkbox-custom"></span>
+                          <span>{category}</span>
+                        </label>
+                      ))}
                   </div>
                 </div>
 
@@ -493,46 +537,27 @@ const Home = () => {
                     <input
                       type="range"
                       min="0"
-                      max="1000"
+                      max={maxPrice}
                       value={priceRange}
                       onChange={handlePriceChange}
                       className="range-slider"
                     />
-                    <div className="price-labels">
+                    <div className="price-range-values">
                       <span>₹0</span>
-                      <span className="current-price">₹{priceRange}</span>
-                      <span>₹1000</span>
+                      <span>₹{priceRange}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="filter-group">
-                  <h4>Brand</h4>
-                  <div className="checkbox-group">
-                    <label className="checkbox-label">
-                      <input type="checkbox" className="checkbox-input" />
-                      <span className="checkbox-custom"></span>
-                      <span>Amul</span>
-                    </label>
-                    <label className="checkbox-label">
-                      <input type="checkbox" className="checkbox-input" />
-                      <span className="checkbox-custom"></span>
-                      <span>Patanjali</span>
-                    </label>
-                    <label className="checkbox-label">
-                      <input type="checkbox" className="checkbox-input" />
-                      <span className="checkbox-custom"></span>
-                      <span>Nestle</span>
-                    </label>
-                    <label className="checkbox-label">
-                      <input type="checkbox" className="checkbox-input" />
-                      <span className="checkbox-custom"></span>
-                      <span>Britannia</span>
-                    </label>
-                  </div>
-                </div>
+                <button className="btn apply-filter-btn" onClick={applyFilters}>
+                  Apply Filters
+                </button>
+                <button className="btn reset-filter-btn" onClick={resetFilters}>
+                  Reset Filters
+                </button>
 
-                <button className="btn apply-filter-btn">Apply Filters</button>
+                
+              
               </div>
             </aside>
 
@@ -544,8 +569,8 @@ const Home = () => {
                 </div>
               ) : (
                 <>
-                  {products.length > 0 ? (
-                    products.map((product) => (
+                  {filteredProducts.length > 0 ? (
+                    filteredProducts.map((product) => (
                       <div className="product-card" key={product._id || product.name}>
                         <div className="product-image">
                           <img
@@ -565,7 +590,6 @@ const Home = () => {
                           />
                           {/* Add a more visible wishlist button */}
                           <button
-                            
                             title={isInWishlist(product) ? "Remove from Wishlist" : "Add to Wishlist"}
                             onClick={(e) => toggleWishlist(product, e)}
                           >
@@ -602,7 +626,7 @@ const Home = () => {
                     ))
                   ) : (
                     <div className="no-products">
-                      <p>No products found.</p>
+                      <p>No products found matching your filters.</p>
                     </div>
                   )}
                 </>
@@ -617,7 +641,7 @@ const Home = () => {
         <div className="footer-container">
           <div className="footer-columns">
             <div className="footer-column">
-              <h3>JG Enterprise</h3>
+              <h3>Dinesh Laal's Shop</h3>
               <p>Your local kirana store with everything you need for your home and family.</p>
               <div className="social-icons">
                 <a href="#" className="social-icon">
@@ -635,16 +659,16 @@ const Home = () => {
               <h4>Shop</h4>
               <ul>
                 <li>
-                  <a href="#">Fruits & Vegetables</a>
+                  <a href="#">Grains</a>
                 </li>
                 <li>
-                  <a href="#">Dairy & Eggs</a>
+                  <a href="#">Rice</a>
                 </li>
                 <li>
-                  <a href="#">Meat & Seafood</a>
+                  <a href="#">Oil</a>
                 </li>
                 <li>
-                  <a href="#">Bakery</a>
+                  <a href="#">Bitten Rice</a>
                 </li>
               </ul>
             </div>
@@ -670,11 +694,11 @@ const Home = () => {
               <ul className="contact-info">
                 <li>
                   <MapPin size={16} />
-                  <span>123 Market Street, Fresh District, City</span>
+                  <span>Bhedasingh, Kathmandu</span>
                 </li>
                 <li>
                   <Phone size={16} />
-                  <span>+1 (555) 123-4567</span>
+                  <span>+977 9841241832</span>
                 </li>
                 <li>
                   <Mail size={16} />
@@ -684,7 +708,7 @@ const Home = () => {
             </div>
           </div>
           <div className="footer-bottom">
-            <p>&copy; {new Date().getFullYear()} JG Enterprise. All rights reserved.</p>
+            <p>&copy; {new Date().getFullYear()} Dinesh Lal's Shop. All rights reserved.</p>
           </div>
         </div>
       </footer>
