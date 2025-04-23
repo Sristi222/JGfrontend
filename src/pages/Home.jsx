@@ -299,7 +299,7 @@ const Home = () => {
       <header className="navbar">
         <div className="navbar-container">
           <a href="/" className="logo">
-            <span>🛍️ Dinesh Laal's Shop</span>
+            <span>Dinesh Laal's Shop</span>
           </a>
 
           <div className="desktop-nav">
