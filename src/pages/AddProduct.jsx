@@ -175,8 +175,8 @@ const AddProduct = () => {
                 <option value="Grains">Grains</option>
                 <option value="Rice">Rice</option>
                 <option value="Oil">Oil</option>
-                <option value="Taichin">Taichin Chamal</option>
-                <option value="Chuira">Chuira</option>
+                <option value="Taichin Chamal">Taichin Chamal</option>
+                <option value="Chiura">Chuira</option>
               </select>
             </div>
 
