@@ -20,7 +20,7 @@ const Login = () => {
 
     try {
       console.log("Attempting login with:", { email, password })
-      const res = await axios.post("http://localhost:5000/api/login", { email, password })
+      const res = await axios.post("https://dineshlaalshop.onrender.com/api/login", { email, password })
       console.log("Login response:", res.data)
 
       if (res.data.token) {
