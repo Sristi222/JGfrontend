@@ -18,7 +18,7 @@ const AddProduct = () => {
   const navigate = useNavigate();
 
   const fetchProducts = async () => {
-    const res = await axios.get("http://localhost:5000/api/products");
+    const res = await axios.get("https://dineshlaalshop.onrender.com/api/products");
     setProducts(res.data);
   };
 
@@ -73,12 +73,12 @@ const AddProduct = () => {
 
     try {
       if (editingId) {
-        await axios.put(`http://localhost:5000/api/products/${editingId}`, formData, {
+        await axios.put(`https://dineshlaalshop.onrender.com/api/products/${editingId}`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         alert("Product updated successfully!");
       } else {
-        await axios.post("http://localhost:5000/api/products", formData, {
+        await axios.post("https://dineshlaalshop.onrender.com/api/products", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         alert("Product added successfully!");
@@ -94,7 +94,7 @@ const AddProduct = () => {
 
   const deleteProduct = async (id) => {
     if (!window.confirm("Delete this product?")) return;
-    await axios.delete(`http://localhost:5000/api/products/${id}`);
+    await axios.delete(`https://dineshlaalshop.onrender.com/api/products/${id}`);
     fetchProducts();
   };
 
