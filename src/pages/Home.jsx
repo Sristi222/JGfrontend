@@ -1,28 +1,9 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
-import {
-  Menu,
-  X,
-  ShoppingCart,
-  User,
-  Heart,
-  ChevronDown,
-  ChevronUp,
-  Filter,
-  Facebook,
-  Instagram,
-  Twitter,
-  MapPin,
-  Phone,
-  Mail,
-  Truck,
-  LogOut,
-  LogIn,
-  UserPlus,
-} from "lucide-react"
+import { Menu, X, ShoppingCart, User, Heart, ChevronDown, ChevronUp, Filter, Facebook, Instagram, Twitter, MapPin, Phone, Mail, Truck, LogOut, LogIn, UserPlus } from 'lucide-react'
 import "./Home.css"
 import "./Contact"
 
@@ -62,6 +43,9 @@ const Home = () => {
   const [filteredProducts, setFilteredProducts] = useState([])
   const [maxPrice, setMaxPrice] = useState(1000)
   const [availableCategories, setAvailableCategories] = useState([])
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false)
+  const mobileMenuRef = useRef(null)
+  const hamburgerRef = useRef(null)
 
   useEffect(() => {
     setLoading(true)
@@ -138,13 +122,15 @@ const Home = () => {
   const addToCart = (product, e) => {
     // Prevent event bubbling
     if (e) {
+      e.preventDefault()
       e.stopPropagation()
     }
 
     const token = isLoggedIn()
     if (!token) {
-      alert("Please log in to add items to your cart.")
-      navigate("/login")
+      // Instead of redirecting, show login prompt
+      setShowLoginPrompt(true)
+      setTimeout(() => setShowLoginPrompt(false), 3000)
       return
     }
 
@@ -171,13 +157,15 @@ const Home = () => {
   const toggleWishlist = (product, e) => {
     // Prevent event bubbling
     if (e) {
+      e.preventDefault()
       e.stopPropagation()
     }
 
     const token = isLoggedIn()
     if (!token) {
-      alert("Please log in to add items to your wishlist.")
-      navigate("/login")
+      // Instead of redirecting, show login prompt
+      setShowLoginPrompt(true)
+      setTimeout(() => setShowLoginPrompt(false), 3000)
       return
     }
 
@@ -185,10 +173,10 @@ const Home = () => {
     const wishlistKey = `wishlist_${token}`
 
     // Check if product is already in wishlist
-    const isInWishlist = wishlist.some((item) => (item._id || item.name) === productId)
+    const isProductInWishlist = wishlist.some((item) => (item._id || item.name) === productId)
 
     let newWishlist
-    if (isInWishlist) {
+    if (isProductInWishlist) {
       // Remove from wishlist
       newWishlist = wishlist.filter((item) => (item._id || item.name) !== productId)
       alert(`${product.name} removed from wishlist!`)
@@ -215,9 +203,22 @@ const Home = () => {
     return wishlist.some((item) => (item._id || item.name) === productId)
   }
 
-  const toggleMobileMenu = () => setMobileMenuOpen(!mobileMenuOpen)
-  const toggleMobileFilter = () => setMobileFilterOpen(!mobileFilterOpen)
-  const toggleUserMenu = () => setUserMenuOpen(!userMenuOpen)
+  const toggleMobileFilter = (e) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+    setMobileFilterOpen(!mobileFilterOpen)
+  }
+
+  const toggleUserMenu = (e) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+    setUserMenuOpen(!userMenuOpen)
+  }
+
   const handlePriceChange = (e) => setPriceRange(e.target.value)
 
   const handleCategoryChange = (category) => {
@@ -230,7 +231,12 @@ const Home = () => {
     })
   }
 
-  const applyFilters = () => {
+  const applyFilters = (e) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+
     console.log("Applying filters...")
     console.log("Original products count:", products.length)
     console.log("Selected categories:", selectedCategories)
@@ -264,15 +270,109 @@ const Home = () => {
     setMobileFilterOpen(false)
   }
 
-  const resetFilters = () => {
+  const resetFilters = (e) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+
     console.log("Resetting filters")
     setSelectedCategories([])
     setPriceRange(maxPrice)
     setFilteredProducts(products)
   }
 
+  // Close user menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userMenuOpen && !event.target.closest(".user-menu-container")) {
+        setUserMenuOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [userMenuOpen])
+
+  // Handle hamburger menu click
+  const handleMobileMenuToggle = (e) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+
+    console.log("Toggle mobile menu clicked, current state:", mobileMenuOpen)
+    setMobileMenuOpen(!mobileMenuOpen)
+
+    // Toggle body scroll when menu is open
+    if (!mobileMenuOpen) {
+      document.body.style.overflow = "hidden"
+      setUserMenuOpen(false)
+      setMobileFilterOpen(false)
+    } else {
+      document.body.style.overflow = ""
+    }
+  }
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        mobileMenuOpen &&
+        mobileMenuRef.current &&
+        !mobileMenuRef.current.contains(event.target) &&
+        hamburgerRef.current &&
+        !hamburgerRef.current.contains(event.target)
+      ) {
+        setMobileMenuOpen(false)
+      }
+    }
+
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside)
+    }
+  }, [mobileMenuOpen])
+
+  // Handle direct navigation to login/register
+  const goToLogin = (e) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+    navigate("/login")
+  }
+
+  const goToRegister = (e) => {
+    if (e) {
+      e.preventDefault()
+      e.stopPropagation()
+    }
+    navigate("/register")
+  }
+
   return (
     <div className="app-container">
+      {/* Mobile Menu Backdrop */}
+      <div className={`mobile-menu-backdrop ${mobileMenuOpen ? "active" : ""}`} onClick={handleMobileMenuToggle}></div>
+
+      {/* Login Prompt */}
+      {showLoginPrompt && (
+        <div className="login-prompt">
+          <p>Please log in to continue</p>
+          <div className="login-prompt-actions">
+            <button onClick={goToLogin} className="login-prompt-btn">
+              Login
+            </button>
+            <button onClick={goToRegister} className="register-prompt-btn">
+              Register
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Top Bar */}
       <div className="top-bar">
         <div className="top-bar-container">
@@ -317,7 +417,7 @@ const Home = () => {
             <div className="user-menu-container">
               {isLoggedIn() ? (
                 <>
-                  <button className="header-action-btn" onClick={toggleUserMenu}>
+                  <button className="header-action-btn" onClick={toggleUserMenu} aria-label="User menu">
                     <User size={20} />
                   </button>
                   {userMenuOpen && (
@@ -336,7 +436,9 @@ const Home = () => {
                       </a>
                       <button
                         className="dropdown-item logout-item"
-                        onClick={() => {
+                        onClick={(e) => {
+                          e.preventDefault()
+                          e.stopPropagation()
                           logout()
                           window.location.reload()
                         }}
@@ -349,51 +451,114 @@ const Home = () => {
                 </>
               ) : (
                 <div className="auth-nav-buttons">
-                  <a href="/login" className="auth-nav-btn login-nav-btn">
+                  <a href="/login" className="auth-nav-btn login-nav-btn" onClick={goToLogin}>
                     <LogIn size={16} />
                     <span>Login</span>
                   </a>
-                  <a href="/register" className="auth-nav-btn register-nav-btn">
+                  <a href="/register" className="auth-nav-btn register-nav-btn" onClick={goToRegister}>
                     <UserPlus size={16} />
                     <span>Register</span>
                   </a>
                 </div>
               )}
             </div>
-            <a href="/favorites" className="header-action-btn">
+            <button
+              className="header-action-btn"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                if (!isLoggedIn()) {
+                  setShowLoginPrompt(true)
+                  setTimeout(() => setShowLoginPrompt(false), 3000)
+                } else {
+                  navigate("/favorites")
+                }
+              }}
+              aria-label="Favorites"
+            >
               <Heart size={20} />
               {wishlist.length > 0 && <span className="wishlist-badge">{wishlist.length}</span>}
-            </a>
-            <a href="/cart" className="header-action-btn cart-icon-container">
+            </button>
+            <button
+              className="header-action-btn cart-icon-container"
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                if (!isLoggedIn()) {
+                  setShowLoginPrompt(true)
+                  setTimeout(() => setShowLoginPrompt(false), 3000)
+                } else {
+                  navigate("/cart")
+                }
+              }}
+              aria-label="Cart"
+            >
               <ShoppingCart size={20} />
               <span className="cart-badge">{cartCount}</span>
-            </a>
-            <button className="mobile-menu-toggle" onClick={toggleMobileMenu}>
+            </button>
+            <button
+              ref={hamburgerRef}
+              className="mobile-menu-toggle"
+              onClick={handleMobileMenuToggle}
+              aria-label="Toggle menu"
+              type="button"
+              style={{
+                alignItems: "center",
+                justifyContent: "center",
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                padding: "8px",
+                zIndex: 1000,
+                position: "relative",
+              }}
+            >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
 
         {/* Mobile Menu */}
-        <div className={`mobile-menu ${mobileMenuOpen ? "active" : ""}`}>
+        <div ref={mobileMenuRef} className={`mobile-menu ${mobileMenuOpen ? "active" : ""}`}>
+          <div className="mobile-menu-header">
+            <div className="mobile-menu-title">Dinesh Laal's Shop</div>
+            
+            </div>
+
           <nav className="mobile-nav-links">
-            <a href="/" className="mobile-nav-link">
+            <a
+              href="/"
+              className="mobile-nav-link"
+              onClick={(e) => {
+                e.preventDefault()
+                setMobileMenuOpen(false)
+                navigate("/")
+              }}
+            >
               Home
             </a>
-            <a href="/about" className="mobile-nav-link">
-              About
-            </a>
-            <a href="/contact" className="mobile-nav-link">
+            <a
+              href="/contact"
+              className="mobile-nav-link"
+              onClick={(e) => {
+                e.preventDefault()
+                setMobileMenuOpen(false)
+                navigate("/contact")
+              }}
+            >
               Contact
             </a>
           </nav>
+
           <div className="mobile-auth">
             {isLoggedIn() ? (
               <>
                 <div className="mobile-user-greeting">Hello, {getUserName()}</div>
                 <button
                   className="btn logout-btn"
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.preventDefault()
+                    e.stopPropagation()
                     logout()
                     window.location.reload()
                   }}
@@ -404,14 +569,14 @@ const Home = () => {
               </>
             ) : (
               <div className="auth-buttons">
-                <a href="/login" className="btn login-btn">
+                <button className="btn login-btn" onClick={goToLogin}>
                   <LogIn size={16} />
                   Login
-                </a>
-                <a href="/register" className="btn register-btn">
+                </button>
+                <button className="btn register-btn" onClick={goToRegister}>
                   <UserPlus size={16} />
                   Register
-                </a>
+                </button>
               </div>
             )}
           </div>
@@ -425,11 +590,12 @@ const Home = () => {
             <span className="offer-badge">Special Offer</span>
             <h1>Shop premium quality essentials</h1>
             <p>
-            Explore our handpicked collection of everyday essentials — from chiura, daal, and cooking oils to premium flours, pulses, and more. Shop local, eat better.
+              Explore our handpicked collection of everyday essentials — from chiura, daal, and cooking oils to premium
+              flours, pulses, and more. Shop local, eat better.
             </p>
             <a href="#featured-products" className="btn shop-now-btn">
-  Shop Now
-</a>
+              Shop Now
+            </a>
           </div>
           <div className="hero-image">
             <img
@@ -440,45 +606,6 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Featured Categories 
-      <section className="featured-categories">
-        <div className="container">
-          <div className="section-header">
-            <h2>Shop By Category</h2>
-            <p>Find everything you need for your home</p>
-          </div>
-          <div className="categories-grid">
-            <a href="/category/fruits-vegetables" className="category-card">
-              <div className="category-image">
-                <img
-                  src="https://plus.unsplash.com/premium_photo-1722945635992-8eda6a907978?q=80&w=1960&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
-                  alt="Grains and Pulses"
-                />
-              </div>
-              <h3>Grains & Pulses</h3>
-            </a>
-            <a href="/category/dairy-eggs" className="category-card">
-              <div className="category-image">
-                <img
-                  src="https://punjabigroceries.com/cdn/shop/collections/Oil-Ghee-Combo1.jpg?v=1534474410"
-                  alt="Oils & Ghee"
-                />
-              </div>
-              <h3>Oil & Ghee</h3>
-            </a>
-            <a href="/category/pantry" className="category-card">
-              <div className="category-image">
-                <img
-                  src="https://images.unsplash.com/photo-1584473457406-6240486418e9?q=80&w=1974&auto=format&fit=crop"
-                  alt="All-Purpose Flour"
-                />
-              </div>
-              <h3>All-Purpose Flour</h3>
-            </a>
-          </div>
-        </div>
-      </section>*/}
-
       {/* Main Content - Products */}
       <main className="main-content" id="featured-products">
         <div className="container">
@@ -488,7 +615,7 @@ const Home = () => {
           </div>
 
           <div className="products-container">
-            <button className="mobile-filter-toggle" onClick={toggleMobileFilter}>
+            <button className="mobile-filter-toggle" onClick={toggleMobileFilter} aria-expanded={mobileFilterOpen}>
               <Filter size={16} />
               <span>Filters</span>
               {mobileFilterOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -549,15 +676,14 @@ const Home = () => {
                   </div>
                 </div>
 
-                <button className="btn apply-filter-btn" onClick={applyFilters}>
-                  Apply Filters
-                </button>
-                <button className="btn reset-filter-btn" onClick={resetFilters}>
-                  Reset Filters
-                </button>
-
-                
-              
+                <div className="filter-actions">
+                  <button className="btn apply-filter-btn" onClick={applyFilters}>
+                    Apply Filters
+                  </button>
+                  <button className="btn reset-filter-btn" onClick={resetFilters}>
+                    Reset Filters
+                  </button>
+                </div>
               </div>
             </aside>
 
@@ -588,10 +714,12 @@ const Home = () => {
                                 "https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=1974&auto=format&fit=crop"
                             }}
                           />
-                          {/* Add a more visible wishlist button */}
+                          {/* Wishlist button */}
                           <button
+                            className={`wishlist-btn-main ${isInWishlist(product) ? "active" : ""}`}
                             title={isInWishlist(product) ? "Remove from Wishlist" : "Add to Wishlist"}
                             onClick={(e) => toggleWishlist(product, e)}
+                            aria-label={isInWishlist(product) ? "Remove from Wishlist" : "Add to Wishlist"}
                           >
                             <Heart size={18} />
                           </button>
@@ -610,12 +738,17 @@ const Home = () => {
                               <span className="current-price">₹{Number(product.price).toLocaleString()}</span>
                             </div>
                             <div className="product-buttons">
-                              <button className="add-to-cart-btn" onClick={(e) => addToCart(product, e)}>
+                              <button
+                                className="add-to-cart-btn"
+                                onClick={(e) => addToCart(product, e)}
+                                aria-label={`Add ${product.name} to cart`}
+                              >
                                 Add to Cart
                               </button>
                               <button
                                 className={`wishlist-btn-small ${isInWishlist(product) ? "active" : ""}`}
                                 onClick={(e) => toggleWishlist(product, e)}
+                                aria-label={isInWishlist(product) ? "Remove from Wishlist" : "Add to Wishlist"}
                               >
                                 <Heart size={16} />
                               </button>
@@ -644,13 +777,13 @@ const Home = () => {
               <h3>Dinesh Laal's Shop</h3>
               <p>Your local kirana store with everything you need for your home and family.</p>
               <div className="social-icons">
-                <a href="#" className="social-icon">
+                <a href="#" className="social-icon" aria-label="Facebook">
                   <Facebook size={18} />
                 </a>
-                <a href="#" className="social-icon">
+                <a href="#" className="social-icon" aria-label="Instagram">
                   <Instagram size={18} />
                 </a>
-                <a href="#" className="social-icon">
+                <a href="#" className="social-icon" aria-label="Twitter">
                   <Twitter size={18} />
                 </a>
               </div>
