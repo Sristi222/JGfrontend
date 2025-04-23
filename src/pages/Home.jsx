@@ -423,7 +423,7 @@ const Home = () => {
         <div className="hero-content">
           <div className="hero-text">
             <span className="offer-badge">Special Offer</span>
-            <h1>Shop preminum quality essentials</h1>
+            <h1>Shop premium quality essentials</h1>
             <p>
             Explore our handpicked collection of everyday essentials — from chiura, daal, and cooking oils to premium flours, pulses, and more. Shop local, eat better.
             </p>
