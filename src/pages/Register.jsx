@@ -36,7 +36,7 @@ const Register = () => {
     setLoading(true)
     try {
       console.log("Registering with:", { username, email, password })
-      const res = await axios.post("http://localhost:5000/api/register", { username, email, password })
+      const res = await axios.post("https://dineshlaalshop.onrender.com/api/register", { username, email, password })
       console.log("Registration response:", res.data)
 
       // Option 1: Redirect to login page
@@ -44,7 +44,7 @@ const Register = () => {
 
       // Option 2: Auto-login after registration (if your API supports it)
       try {
-        const loginRes = await axios.post("http://localhost:5000/api/login", { email, password })
+        const loginRes = await axios.post("https://dineshlaalshop.onrender.com/api/login", { email, password })
         if (loginRes.data.token) {
           localStorage.setItem("token", loginRes.data.token)
           localStorage.setItem("username", username) // Save username to localStorage
