@@ -637,7 +637,7 @@ const Home = () => {
                         onChange={() => handleCategoryChange("Grocery")}
                       />
                       <span className="checkbox-custom"></span>
-                      <span>Grains</span>
+                      <span>Grocery</span>
                     </label>
 
                     {/* Dynamic categories from products */}
