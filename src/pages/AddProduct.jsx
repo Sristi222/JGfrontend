@@ -173,10 +173,10 @@ const AddProduct = () => {
               >
                 <option value="">-- Select Category --</option>
                 <option value="Grains">Grains</option>
-                <option value="Rice">Rice</option>
-                <option value="Oil">Oil</option>
+                <option value="Rice">Flour</option>
+                <option value="Oil">Oil & Ghee</option>
                 <option value="Taichin Chamal">Taichin Chamal</option>
-                <option value="Chiura">Chuira</option>
+                <option value="Chiura">Chiura</option>
               </select>
             </div>
 
